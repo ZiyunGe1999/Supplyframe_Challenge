@@ -13,35 +13,12 @@ app.listen(port, (req, res)=>{
 
 app.use('/api/v1', api);
 
-// Catch all other routes request and return it to the index
-
-// app.get('/watchlist', (req, res)=>{
-//     console.log(`here ${req.url}`)
-//     res.sendFile(path.join(__dirname, 'dist/stock-search/index.html'));
-//   })
-
-// app.get('/search/*', (req, res)=>{
-//     console.log(`here ${req.url}`)
-//     res.sendFile(path.join(__dirname, 'dist/stock-search/index.html'));
-//   })
-
-app.get('/', (req, res) => {
-  console.log(`here ${req.url}`);
-  res.sendFile(path.join(__dirname, 'static/index.html'));
+app.get('/*', (req, res)=>{
+  console.log(`here ${req.url}`)
+  if (req.url === '/') {
+    res.sendFile(path.join(__dirname, 'static/index.html'));
+  }
+  else {
+      res.sendFile(path.join(__dirname, `static${req.url}`));
+  }
 })
-
-// app.get('/*', (req, res)=>{
-//     console.log(`here ${req.url}`)
-//     if (req.url === '/') {
-//         // res.sendFile(path.join(__dirname, 'dist/stock-search/index.html'));
-//         res.redirect('/search/home');
-//     }
-//     else {
-//         res.sendFile(path.join(__dirname, `dist/stock-search${req.url}`));
-//     }
-// })
-
-// respond with "hello world" when a GET request is made to the homepage
-// app.get('/', function (req, res){
-//     res.send('Hello World')
-// });
