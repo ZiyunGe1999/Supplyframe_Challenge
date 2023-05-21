@@ -1,5 +1,6 @@
 var pageSize = 4;
 var newsData;
+var progress_steps = 0;
 
 function loadCompanyTab(event) {
     console.log('loadCompanyTab');
@@ -15,6 +16,7 @@ function loadCompanyTab(event) {
         document.getElementById('company-name').innerHTML = infos['name'];
         document.getElementById('exchange-code').innerHTML = infos['exchange'];
     }
+    incrementProgressSteps();
 }
 
 function loadPrice(event) {
@@ -43,6 +45,7 @@ function loadPrice(event) {
         dateFormat = date.getHours() + ":" + minutes.substr(-2) + ':' + seconds.substr(-2) + " "+ date.toDateString();
         document.getElementById('timestamp').innerHTML = dateFormat;
     }
+    incrementProgressSteps();
 }
 
 function loadNewsPage(page) {
@@ -71,6 +74,11 @@ function loadNewsPage(page) {
         console.error("Failed to load news template:", error);
     });
     generatePagination(page);
+    
+    var all_infos_elem = document.getElementById('all-infos');
+    if (all_infos_elem.style.display === 'none') {
+        incrementProgressSteps();
+    }
 }
   
 function generatePagination(page) {
@@ -134,12 +142,43 @@ function transformNumber(d) {
     }
 }
 
-function submitSearch() {
+async function incrementProgressSteps() {
+    progress_steps += 1;
+    var process_bar_div = document.getElementById('search-progress-bar-div');
+    process_bar_div.style.display = 'block';
+    var all_infos_elem = document.getElementById('all-infos');
+    all_infos_elem.style.display = 'none';
+    var progress_bar = document.getElementById('search-progress-bar');
+    progress_bar.innerHTML = `${Math.ceil(100 / 3 * progress_steps)}%`;
+    progress_bar.style.width = `${100 / 3 * progress_steps}%`;
+    if (progress_steps >= 3) {
+        await delay(500);
+        process_bar_div.style.display = 'none';
+        all_infos_elem.style.display = 'block';
+    }
+}
+
+function zeroProgressSteps() {
+    progress_steps = 0;
+    var progress_bar = document.getElementById('search-progress-bar');
+    progress_bar.innerHTML = `${100 / 3 * progress_steps}%`;
+    progress_bar.style.width = `${100 / 3 * progress_steps}%`;
+}
+
+function delay(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+async function submitSearch() {
     var token = document.getElementById('token').value;
     console.log(`submit search ${token}`);
 
+    zeroProgressSteps();
+
     requestAPI(`/api/v1/stock/profile2?symbol=${token}`, loadCompanyTab);
+    await delay(300);
     requestAPI(`/api/v1/quote?symbol=${token}`, loadPrice);
+    await delay(300);
 
     var cur_time = Math.round(Date.now().valueOf());
     var seven_days_before = cur_time - (7 * 24 * 60 * 60 * 1000);
