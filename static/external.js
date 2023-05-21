@@ -25,6 +25,15 @@ function loadPrice(event) {
     else {
         document.getElementById('last-price').innerHTML = infos['c'];
         document.getElementById('change').innerHTML = `${infos['d']}(${infos['dp']}%)`;
+        if (infos['d'] > 0) {
+            document.getElementById('last-price').style.color = "green";
+            document.getElementById('change').style.color = "green";
+            document.getElementById('change_img').src = '/images/GreenArrowUp.png';
+        } else {
+            document.getElementById('last-price').style.color = "red";
+            document.getElementById('change').style.color = "red";
+            document.getElementById('change_img').src = '/images/RedArrowDown.png';
+        }
         const date= new Date(infos['t'] * 1e3);
         var minutes = "0" + date.getMinutes();
         var seconds = "0" + date.getSeconds();
@@ -43,6 +52,7 @@ function loadNews(event) {
     }
     else {
         var newsList = document.getElementById("news-list");
+        newsList.innerHTML = '';
         fetch("news_template.html")
         .then((response) => response.text())
         .then((template) => {
@@ -108,6 +118,16 @@ function submitSearch() {
     requestAPI(url, loadNews);
 }
 
+function takeOverFormSubmit() {
+    var form = document.getElementById("search-form");
+
+    form.addEventListener("submit", function(event) {
+        event.preventDefault(); // 阻止表单的默认提交行为
+        submitSearch();
+    });
+}
+
 window.onload = function(){
-    console.log('window onload')    
+    console.log('window onload')  
+    takeOverFormSubmit();  
 }
