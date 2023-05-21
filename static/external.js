@@ -1,3 +1,6 @@
+var pageSize = 4;
+var newsData;
+
 function loadCompanyTab(event) {
     console.log('loadCompanyTab');
     var reponse_text = event.target.responseText;
@@ -42,33 +45,67 @@ function loadPrice(event) {
     }
 }
 
+function loadNewsPage(page) {
+    var startIndex = (page - 1) * pageSize;
+    var endIndex = startIndex + pageSize;
+    var newsItems = newsData.slice(startIndex, endIndex);
+  
+    var newsListContainer = document.getElementById("newsListContainer");
+    newsListContainer.innerHTML = '';
+    
+
+    fetch("news_template.html")
+    .then((response) => response.text())
+    .then((template) => {
+        newsItems.forEach((newsItem) => {
+            const listItem = document.createElement("li");
+            const date= new Date(newsItem['datetime'] * 1e3);
+            listItem.innerHTML = template
+              .replace("{{title}}", newsItem['headline'])
+              .replace("{{date}}", date.toDateString())
+              .replace("{{link}}", newsItem['url']);
+              newsListContainer.appendChild(listItem.firstChild);
+        });
+    })
+    .catch((error) => {
+        console.error("Failed to load news template:", error);
+    });
+    generatePagination(page);
+}
+  
+function generatePagination(page) {
+    var totalNews = infos.length;
+    var totalPages = Math.ceil(totalNews / pageSize);
+    var paginationContainer = document.getElementById("paginationContainer");
+    paginationContainer.innerHTML = "";
+    for (var i = 1; i <= totalPages; i++) {
+        var listItem = document.createElement("li");
+        listItem.className = "page-item";
+        listItem.innerHTML = `
+        <a class="page-link" href="#" onclick="loadNewsPage(${i})">${i}</a>
+        `;
+        if (i === page) {
+            listItem.classList.add("active");
+        }
+        paginationContainer.appendChild(listItem);
+    }
+}
+
 function loadNews(event) {
     console.log('loadNews');
     var reponse_text = event.target.responseText;
     infos = JSON.parse(event.target.responseText);
     console.log(reponse_text);
+    // newsData = infos
     if (JSON.stringify(infos) === '{}') {
-
+        newsData = infos
     }
     else {
-        var newsList = document.getElementById("news-list");
-        newsList.innerHTML = '';
-        fetch("news_template.html")
-        .then((response) => response.text())
-        .then((template) => {
-            infos.forEach((newsItem) => {
-                const listItem = document.createElement("li");
-                const date= new Date(newsItem['datetime'] * 1e3);
-                listItem.innerHTML = template
-                  .replace("{{title}}", newsItem['headline'])
-                  .replace("{{date}}", date.toDateString())
-                  .replace("{{link}}", newsItem['url']);
-                newsList.appendChild(listItem.firstChild);
-            });
-        })
-        .catch((error) => {
-            console.error("Failed to load news template:", error);
-        });
+        if (infos.length > 20) {
+            infos.splice(20);
+        }
+        newsData = infos;
+        loadNewsPage(1);
     }
 }
 
