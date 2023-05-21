@@ -1,5 +1,5 @@
 function loadCompanyTab(event) {
-    console.log('get infos');
+    console.log('loadCompanyTab');
     var reponse_text = event.target.responseText;
     infos = JSON.parse(event.target.responseText);
     console.log(reponse_text);
@@ -7,11 +7,29 @@ function loadCompanyTab(event) {
 
     }
     else {
-        console.log(infos['logo']);
         document.getElementById('logo').src = infos['logo'];
         document.getElementById('symbol').innerHTML = infos['ticker'];
         document.getElementById('company-name').innerHTML = infos['name'];
         document.getElementById('exchange-code').innerHTML = infos['exchange'];
+    }
+}
+
+function loadPrice(event) {
+    console.log('loadPrice');
+    var reponse_text = event.target.responseText;
+    infos = JSON.parse(event.target.responseText);
+    console.log(reponse_text);
+    if (JSON.stringify(infos) === '{}') {
+
+    }
+    else {
+        document.getElementById('last-price').innerHTML = infos['c'];
+        document.getElementById('change').innerHTML = `${infos['d']}(${infos['dp']}%)`;
+        const date= new Date(infos['t'] * 1e3);
+        var minutes = "0" + date.getMinutes();
+        var seconds = "0" + date.getSeconds();
+        dateFormat = date.getHours() + ":" + minutes.substr(-2) + ':' + seconds.substr(-2) + " "+ date.toDateString();
+        document.getElementById('timestamp').innerHTML = dateFormat;
     }
 }
 
@@ -35,6 +53,7 @@ function submitSearch() {
     console.log(`submit search ${token}`);
 
     requestAPI(`/api/v1/stock/profile2?symbol=${token}`, loadCompanyTab);
+    requestAPI(`/api/v1/quote?symbol=${token}`, loadPrice);
 }
 
 window.onload = function(){
