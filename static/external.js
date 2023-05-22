@@ -201,3 +201,7 @@ window.onload = function(){
     console.log('window onload')  
     takeOverFormSubmit();  
 }
+
+module.exports = {
+    transformNumber
+};
