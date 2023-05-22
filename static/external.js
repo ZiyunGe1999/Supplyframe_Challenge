@@ -8,15 +8,15 @@ function loadCompanyTab(event) {
     infos = JSON.parse(event.target.responseText);
     console.log(reponse_text);
     if (JSON.stringify(infos) === '{}') {
-
+        document.getElementById('search-alert').style.display = 'block';
     }
     else {
         document.getElementById('logo').src = infos['logo'];
         document.getElementById('symbol').innerHTML = infos['ticker'];
         document.getElementById('company-name').innerHTML = infos['name'];
         document.getElementById('exchange-code').innerHTML = infos['exchange'];
+        incrementProgressSteps();
     }
-    incrementProgressSteps();
 }
 
 function loadPrice(event) {
@@ -24,8 +24,8 @@ function loadPrice(event) {
     var reponse_text = event.target.responseText;
     infos = JSON.parse(event.target.responseText);
     console.log(reponse_text);
-    if (JSON.stringify(infos) === '{}') {
-
+    if (infos['c'] === 0) {
+        document.getElementById('search-alert').style.display = 'block';
     }
     else {
         document.getElementById('last-price').innerHTML = infos['c'];
@@ -44,8 +44,8 @@ function loadPrice(event) {
         var seconds = "0" + date.getSeconds();
         dateFormat = date.getHours() + ":" + minutes.substr(-2) + ':' + seconds.substr(-2) + " "+ date.toDateString();
         document.getElementById('timestamp').innerHTML = dateFormat;
+        incrementProgressSteps();
     }
-    incrementProgressSteps();
 }
 
 function loadNewsPage(page) {
@@ -69,10 +69,6 @@ function loadNewsPage(page) {
         newsListContainer.appendChild(listItem);
     });
     generatePagination(page);
-    var all_infos_elem = document.getElementById('all-infos');
-    if (all_infos_elem.style.display === 'none') {
-        incrementProgressSteps();
-    }
 }
   
 function generatePagination(page) {
@@ -99,8 +95,9 @@ function loadNews(event) {
     infos = JSON.parse(event.target.responseText);
     console.log(reponse_text);
     // newsData = infos
-    if (JSON.stringify(infos) === '{}') {
-        newsData = infos
+    if (JSON.stringify(infos) === '[]') {
+        newsData = infos;
+        document.getElementById('search-alert').style.display = 'block';
     }
     else {
         if (infos.length > 20) {
@@ -108,6 +105,7 @@ function loadNews(event) {
         }
         newsData = infos;
         loadNewsPage(1);
+        incrementProgressSteps();
     }
 }
 
@@ -157,6 +155,7 @@ function zeroProgressSteps() {
     var progress_bar = document.getElementById('search-progress-bar');
     progress_bar.innerHTML = `${100 / 3 * progress_steps}%`;
     progress_bar.style.width = `${100 / 3 * progress_steps}%`;
+    document.getElementById('all-infos').style.display = 'none';
 }
 
 function delay(milliseconds) {
@@ -167,6 +166,7 @@ async function submitSearch() {
     var token = document.getElementById('token').value;
     console.log(`submit search ${token}`);
 
+    document.getElementById('search-alert').style.display = 'none';
     zeroProgressSteps();
 
     requestAPI(`/api/v1/stock/profile2?symbol=${token}`, loadCompanyTab);
@@ -192,7 +192,7 @@ function takeOverFormSubmit() {
     var form = document.getElementById("search-form");
 
     form.addEventListener("submit", function(event) {
-        event.preventDefault(); // 阻止表单的默认提交行为
+        event.preventDefault();
         submitSearch();
     });
 }
