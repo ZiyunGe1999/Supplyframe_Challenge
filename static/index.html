@@ -20,6 +20,13 @@
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body style="margin-left: 15px; margin-right: 15px;">
+    <template id="news-template">
+      <div class="col-md-6 col-xs-12 news-item text-left">
+          <h4 class="news-title">{{title}}</h4>
+          <p class="news-date">{{date}}</p>
+          <a href="{{link}}" target="_blank">See Original Post</a>
+      </div>
+    </template>
     <div class="container">
       <div class="row text-center">
         <div id="header">Stock Monitor</div>
@@ -81,25 +88,7 @@
             </nav>
           </div>   
       </div>
-      <!-- <div id="newsListContainer" class="row"></div>
-      <div class="row text-center">
-        <nav aria-label="News Pagination">
-          <ul class="pagination justify-content-center" id="paginationContainer"></ul>
-        </nav>
-      </div> -->
-      <!-- <div class="row text-center" id="news-list">
-      </div> -->
    </div>
-   <!-- <div class="container">
-    <ul class="pagination">
-        <li><a href="#">&laquo;</a></li>
-        <li><a href="#">Siemens</a>Siemens</li>
-        <li><a href="#">2</a>AAPL</li>
-        <li><a href="#">3</a></li>
-        <li><a href="#">4</a></li>
-        <li><a href="#">5</a></li>
-        <li><a href="#">&raquo;</a></li>
-    </ul> -->
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>

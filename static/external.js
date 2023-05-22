@@ -53,28 +53,22 @@ function loadNewsPage(page) {
     var endIndex = startIndex + pageSize;
     var newsItems = newsData.slice(startIndex, endIndex);
   
+    var paginationContainer = document.getElementById("paginationContainer");
+    paginationContainer.innerHTML = "";
     var newsListContainer = document.getElementById("newsListContainer");
     newsListContainer.innerHTML = '';
     
-
-    fetch("news_template.html")
-    .then((response) => response.text())
-    .then((template) => {
-        newsItems.forEach((newsItem) => {
-            const listItem = document.createElement("li");
-            const date= new Date(newsItem['datetime'] * 1e3);
-            listItem.innerHTML = template
-              .replace("{{title}}", newsItem['headline'])
-              .replace("{{date}}", date.toDateString())
-              .replace("{{link}}", newsItem['url']);
-              newsListContainer.appendChild(listItem.firstChild);
-        });
-    })
-    .catch((error) => {
-        console.error("Failed to load news template:", error);
+    var template = document.getElementById('news-template').innerHTML;
+    newsItems.forEach((newsItem) => {
+        const listItem = document.createElement("div");
+        const date= new Date(newsItem['datetime'] * 1e3);
+        listItem.innerHTML = template
+            .replace("{{title}}", newsItem['headline'])
+            .replace("{{date}}", date.toDateString())
+            .replace("{{link}}", newsItem['url']);
+        newsListContainer.appendChild(listItem);
     });
     generatePagination(page);
-    
     var all_infos_elem = document.getElementById('all-infos');
     if (all_infos_elem.style.display === 'none') {
         incrementProgressSteps();
